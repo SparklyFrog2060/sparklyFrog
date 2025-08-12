@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sparkly Frog — Minecraft Channel</title>
+  <meta name="description" content="Sparkly Frog — kanał YouTube o Minecraft. Zielony neon, efekty przewijania, animacje i dużo błysku." />
+  <style>
+    :root{
+      --bg:#0b0f0c;
+      --bg-2:#0e1a14;
+      --primary:#29ff7a;
+      --primary-2:#00d45e;
+      --neon:#a6ffcf;
+      --white:#e9ffee;
+      --muted:#a7b8ac;
+      --card:#101a14cc;
+      --glass:rgba(16,26,20,);
+      --blur:18px;
+      --radius:18px;
+      --shadow:0 10px 30px rgba(0,0,0,.35), 0 0 40px rgba(41,255,122,.1);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans", Ubuntu, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--white);
+      background:
+        radial-gradient(1200px 700px at 80% -10%, #113022 0%, transparent 60%),
+        radial-gradient(900px 600px at -10% 20%, #0d231a 0%, transparent 55%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      overflow-x:hidden;
+    }
+
+    /* Subtelne “piksele” w tle (Minecraft vibe) */
+    .pixel-bg{
+      position:fixed; inset:0; pointer-events:none; z-index:0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+      background-size:24px 24px, 24px 24px;
+      mix-blend-mode:soft-light;
+    }
+
+    header.nav{
+      position:sticky; top:0; z-index:50;
+      background:linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.05));
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .nav-inner{
+      max-width:1200px; margin:0 auto; padding:12px 20px;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--white);
+      font-weight:800; letter-spacing:.5px;
+      text-shadow: 0 0 10px rgba(41,255,122,.25);
+    }
+    .brand .logo{
+      width:36px; height:36px; border-radius:8px; background: conic-gradient(from 0deg, #143d2b, #1e613f, #0e2b1f);
+      box-shadow: inset 0 0 18px rgba(41,255,122,.35), 0 0 22px rgba(41,255,122,.2);
+      position:relative; overflow:hidden;
+    }
+    .brand .logo::after{
+      content:""; position:absolute; inset:-50%;
+      background: radial-gradient(circle at 50% 50%, rgba(41,255,122,.35), transparent 40%);
+      animation: pulse 3s ease-in-out infinite;
+    }
+    @keyframes pulse{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+
+    .nav-links{display:flex; gap:14px; flex-wrap:wrap}
+    .nav-links a{
+      color:var(--white); text-decoration:none; padding:8px 12px; border-radius:10px;
+      background:transparent; border:1px solid rgba(255,255,255,.06);
+      transition:.25s; font-weight:600; font-size:14px;
+    }
+    .nav-links a:hover{ background:rgba(41,255,122,.08); border-color: rgba(41,255,122,.35); box-shadow:0 0 14px rgba(41,255,122,.15) }
+
+    /* HERO */
+    .hero{
+      position:relative; z-index:1;
+      min-height:86vh; display:grid; place-items:center; padding:80px 20px 40px;
+      overflow:hidden;
+    }
+    .glass{
+      background:var(--glass);
+      backdrop-filter: blur(var(--blur));
+      border:1px solid rgba(255,255,255,.);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .hero-card{
+      width:min(100%,1100px); padding:40px; display:grid; gap:28px; grid-template-columns:1.1fr .9fr;
+    }
+    @media (max-width:900px){ .hero-card{grid-template-columns:1fr} }
+
+    .title-wrap{position:relative; padding:14px 0 0}
+    .title{
+      font-size: clamp(42px, 7vw, 92px);
+      line-height:1.02; margin:0;
+      letter-spacing:1px; font-weight:900;
+      color:transparent;
+      background: linear-gradient(90deg, #eafff3, #83ffbf, #1bff6f, #83ffbf, #eafff3);
+      -webkit-background-clip:text; background-clip:text;
+      filter: drop-shadow(0 0 20px rgba(41,255,122,.35)) drop-shadow(0 0 50px rgba(41,255,122,.2));
+      position:relative;
+    }
+    
+    }
+    @keyframes shine { 0%{ left:-30% } 100%{ left:130% } }
+
+    .subtitle{
+      color:var(--muted); font-size: clamp(16px, 2.2vw, 20px); margin-top:6px;
+    }
+
+    .cta{display:flex; gap:12px; flex-wrap:wrap; margin-top:6px}
+    .btn{
+      appearance:none; border:none; cursor:pointer; text-decoration:none; color:#02110a; font-weight:800;
+      padding:12px 18px; border-radius:14px; background:linear-gradient(180deg, var(--primary), var(--primary-2));
+      box-shadow: 0 8px 24px rgba(41,255,122,.25), inset 0 0 12px rgba(255,255,255,.35);
+      transition: transform .15s ease, box-shadow .3s ease;
+    }
+    .btn:hover{ transform: translateY(-2px) scale(1.02); box-shadow: 0 16px 36px rgba(41,255,122,.35), inset 0 0 14px rgba(255,255,255,.45) }
+    .btn.ghost{
+      background: transparent; color:var(--white);
+      border:1px solid rgba(255,255,255,.15); box-shadow:none; font-weight:700;
+    }
+    .btn.ghost:hover{ background:rgba(41,255,122,.08); border-color: rgba(41,255,122,.35) }
+
+    .hero-visual{
+      position:relative; min-height:320px; border-radius:16px; overflow:hidden;
+      background:
+        radial-gradient(200px 200px at 80% 20%, rgba(41,255,122,.25), transparent 60%),
+        radial-gradient(300px 300px at 10% 80%, rgba(41,255,122,.15), transparent 60%),
+        #0c1511;
+      border:1px solid rgba(255,255,255,.06);
+    }
+    /* “Reflektor” na logo/avatara */
+    .spotlight{
+      position:absolute; inset:0;
+      background: radial-gradient(140px 140px at var(--mx,50%) var(--my,50%), rgba(255,255,255,.25), transparent 70%);
+      mix-blend-mode: screen;
+      pointer-events:none;
+      transition: opacity .4s ease;
+      opacity:.7;
+      filter: blur(8px);
+    }
+
+    /* Pływające piksele */
+    .float-pixels{
+      position:absolute; inset:0; overflow:hidden; pointer-events:none;
+    }
+    .pixel{
+      position:absolute; width:10px; height:10px; background:rgba(41,255,122,.35);
+      filter: blur(0.5px);
+      box-shadow:0 0 14px rgba(41,255,122,.35);
+      animation: drift var(--dur) linear infinite;
+    }
+    @keyframes drift{
+      from{ transform: translateY(120%) rotate(0deg) }
+      to{ transform: translateY(-120%) rotate(180deg) }
+    }
+
+    /* SEKCJE */
+    section{ position:relative; z-index:1; }
+    .section{
+      max-width:1200px; margin:80px auto; padding:0 20px;
+      display:grid; gap:28px;
+    }
+    .section .head{
+      display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    }
+    h2{
+      font-size: clamp(26px, 3.2vw, 38px); margin:0;
+      text-shadow: 0 0 14px rgba(41,255,122,.25);
+    }
+    .muted{ color:var(--muted) }
+
+    /* WIDEO GRID */
+    .video-grid{
+      display:grid; gap:16px;
+      grid-template-columns: repeat(12, 1fr);
+    }
+    @media (max-width:1000px){ .video-grid{ grid-template-columns: repeat(8, 1fr) } }
+    @media (max-width:700px){ .video-grid{ grid-template-columns: repeat(4, 1fr) } }
+
+    .video-card{
+      grid-column: span 4; background:var(--glass); border:1px solid rgba(255,255,255,.08);
+      border-radius:16px; overflow:hidden; box-shadow:var(--shadow);
+      transform-style: preserve-3d; transition: transform .2s ease, box-shadow .3s ease;
+    }
+    .video-card.big{ grid-column: span 8 }
+    .video-thumb{
+      position:relative; aspect-ratio:16/9; background:#0b140f; overflow:hidden;
+    }
+    .video-thumb img{ width:100%; height:100%; object-fit:cover; filter:saturate(1.1) contrast(1.05) }
+    .video-thumb::after{
+      content:"▶ Oglądaj"; position:absolute; right:10px; bottom:10px; font-weight:800; font-size:14px;
+      padding:8px 12px; background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.2); border-radius:10px;
+      backdrop-filter: blur(6px);
+    }
+    .video-body{ padding:14px }
+    .video-title{ margin:0 0 6px 0; font-weight:800 }
+    .video-meta{ color:var(--muted); font-size:13px }
+    .video-card:hover{ transform: translateY(-3px); box-shadow: 0 16px 40px rgba(41,255,122,.22) }
+
+    /* PROFIL + SPOTLIGHT AVATAR */
+    .profile{
+      display:grid; grid-template-columns: .9fr 1.1fr; gap:22px;
+    }
+    @media (max-width:900px){ .profile{ grid-template-columns: 1fr } }
+
+    .avatar-wrap{
+      position:relative; border-radius:18px; overflow:hidden; min-height:300px;
+      background: radial-gradient(220px 180px at 25% 30%, rgba(41,255,122,.2), transparent 60%), #0d1713;
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .avatar-wrap img{ width:100%; height:100%; object-fit:cover; opacity:.92; transform: scale(1.03) }
+    .avatar-wrap::after{
+      /* miękki zielony glow na krawędziach */
+      content:""; position:absolute; inset:-20%;
+      background: radial-gradient(60% 60% at 50% 0%, rgba(41,255,122,.25), transparent 60%);
+      pointer-events:none; mix-blend-mode: screen;
+      filter: blur(20px);
+    }
+    .avatar-spot{
+      position:absolute; inset:0; pointer-events:none;
+      background: radial-gradient(120px 120px at var(--mx,50%) var(--my,50%), rgba(255,255,255,.25), transparent 70%);
+      mix-blend-mode: screen; filter: blur(6px);
+    }
+
+    .profile .glass{ padding:20px }
+
+    /* PARTICLE TEXT — łączące się kształty */
+    .merge-section{
+      position:relative; border-radius:18px; overflow:hidden; min-height:420px;
+      border:1px solid rgba(255,255,255,.08);
+      background: radial-gradient(400px 300px at 70% 20%, rgba(41,255,122,.12), transparent 70%), #0c1511;
+    }
+    canvas#particles{ display:block; width:100%; height:420px }
+    .merge-label{
+      position:absolute; inset:auto 16px 16px auto; padding:8px 12px; border-radius:10px;
+      background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.12); font-size:12px; color:var(--muted);
+      backdrop-filter: blur(6px);
+    }
+
+    /* DISCORD SECTION */
+    .discord-wrap{
+      display:grid; grid-template-columns: 1fr 1fr; gap:18px;
+    }
+    @media (max-width:900px){ .discord-wrap{ grid-template-columns: 1fr } }
+    .discord-card{ padding:20px }
+    .discord-cta{
+      display:flex; gap:12px; flex-wrap:wrap; margin-top:10px
+    }
+
+    /* KONTAKT — “nadlatująca” koperta */
+    .contact{
+      display:grid; grid-template-columns: 1.1fr .9fr; gap:20px;
+    }
+    @media (max-width:900px){ .contact{ grid-template-columns: 1fr } }
+    .form{ padding:20px }
+    .form label{ display:block; font-weight:700; margin:12px 0 6px }
+    .form input, .form textarea{
+      width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.25); color:var(--white); outline:none; font-size:15px;
+      transition:border-color .2s ease, box-shadow .2s ease;
+    }
+    .form textarea{ min-height:120px; resize:vertical }
+    .form input:focus, .form textarea:focus{
+      border-color: rgba(41,255,122,.5); box-shadow:0 0 0 6px rgba(41,255,122,.12)
+    }
+
+    .envelope-stage{
+      position:relative; min-height:260px; border-radius:18px; overflow:hidden;
+      background: radial-gradient(300px 260px at 50% 30%, rgba(41,255,122,.2), transparent 70%), #0c1511;
+      border:1px solid rgba(255,255,255,.08);
+      perspective: 900px;
+    }
+    .envelope{
+      position:absolute; left:50%; top:70%;
+      transform: translate(-50%,-50%) rotateX(10deg) rotateZ(-3deg) scale(.7);
+      width:220px; height:140px; background:linear-gradient(180deg, #eafff5, #b6ffd6);
+      border-radius:10px; box-shadow: 0 20px 60px rgba(41,255,122,.25);
+      filter: drop-shadow(0 0 18px rgba(41,255,122,.25));
+      transition: transform 1s cubic-bezier(.2,.7,.1,1), filter .6s ease;
+    }
+    .envelope::before, .envelope::after{
+      content:""; position:absolute; inset:0; border-radius:10px;
+      background: conic-gradient(from 180deg at 50% 0%, #ccffe6, #eafff6, #b6ffd6 60%, #ccffe6);
+      mix-blend-mode: multiply; opacity:.6;
+    }
+    .envelope::after{
+      inset:auto 10px 10px 10px; height:18px; border-radius:6px; background:linear-gradient(180deg, #00e66b, #00c05a);
+      box-shadow: inset 0 0 8px rgba(255,255,255,.5);
+    }
+    .envelope.in-view, .form:focus-within ~ .envelope-stage .envelope{
+      transform: translate(-50%,-54%) rotateX(0deg) rotateZ(0deg) scale(1.1);
+      filter: drop-shadow(0 0 40px rgba(41,255,122,.5));
+    }
+
+    footer{
+      margin:80px 0 40px; text-align:center; color:var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="pixel-bg"></div>
+
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#">
+        <img class="logo" src="https://i.imgur.com/opc2olK.jpeg">
+        <span>Sparkly Frog</span>
+      </a>
+      <nav class="nav-links">
+        
+        <a href="#videos">Filmy</a>
+       
+        
+        <a href="#discord">Discord</a>
+        <a href="#contact">Kontakt</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="home" class="hero">
+    <div class="glass hero-card">
+      <div class="title-wrap">
+        <h1 class="title">Sparkly Frog</h1>
+        <p class="subtitle">Krótkie filmiki, ciekawostki i wyzwania z Minecrafta.</p>
+        <div class="cta">
+          <a class="btn" href="https://youtube.com/@SparklyFrog"_blank" rel="noopener">Odwiedź YouTube</a>
+          <a class="btn ghost" href="#videos">Zobacz najnowsze filmy</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <!-- Pływające piksele -->
+        <div class="float-pixels" id="floatPixels"></div>
+        <div class="spotlight" id="heroSpot"></div>
+      </div>
+    </div>
+  </main>
+
+  <section id="videos" class="section">
+    <div class="head">
+      <h2>Filmy</h2>
+      <span class="muted">Obejrzyj najnowsze lub najpopularniejsze filmy z mojego kanału</span>
+    </div>
+    <div class="video-grid">
+      <!-- Duża karta -->
+      <a class="video-card big glass" href="https://youtube.com/watch?v=Frwh1UETAjA" target="_blank" rel="noopener">
+        <div class="video-thumb">
+          <img src="https://i.imgur.com/cyi4A4v.jpeg" alt="Minecraft przygoda — odcinek specjalny" />
+        </div>
+        <div class="video-body">
+          <h3 class="video-title">INTERAKTYWNY! Film o Minecraft (Telefon/PC)</h3>
+          <div class="video-meta">10.05.2025 • 300 wyświetleń</div>
+        </div>
+      </a>
+
+      <!-- Mniejsze karty -->
+      <a class="video-card glass" href="https://www.youtube.com/shorts/D--tpefktyY" target="_blank" rel="noopener">
+        <div class="video-thumb">
+          <img src="https://i.imgur.com/Kbueza8.jpeg" alt="Buduję zieloną bazę" />
+        </div>
+        <div class="video-body">
+          <h3 class="video-title">PODSUMOWANIE LETNIEJ AKTUALIZACJI Minecraft!</h3>
+          <div class="video-meta">15.06.2025 • 1300 wyświetleń</div>
+        </div>
+      </a>
+
+      <a class="video-card glass" href="https://www.youtube.com/watch?v=oHg5SJYRHA0" target="_blank" rel="noopener">
+        <div class="video-thumb">
+          <img src="https://i.imgur.com/agnkuor.jpeg" alt="Najlepsze mody" />
+        </div>
+        <div class="video-body">
+          <h3 class="video-title">
+Te bloki ZAGINĘŁY</h3>
+          <div class="video-meta">22.01.2025 • 900 wyświetleń</div>
+        </div>
+      </a>
+
+      <a class="video-card glass" href="https://www.youtube.com/watch?v=oHg5SJYRHA0" target="_blank" rel="noopener">
+        <div class="video-thumb">
+          <img src="https://i.imgur.com/ZoAsx82.jpeg" alt="PvP turniej" />
+        </div>
+        <div class="video-body">
+          <h3 class="video-title">
+PRZETESTOWAŁEM NAJDZIWNIEJSZE PODRÓBKI Minecraft!</h3>
+          <div class="video-meta">29.01.2025 • 200 wyświetleń</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section id="profile" class="section">
+    <div class="head">
+      <h2>Profil</h2>
+      <span class="muted">Zdjęcie profilowe kanału na YouTube.</span>
+    </div>
+    <div class="profile">
+      <div class="avatar-wrap glass" id="avatar">
+        <img src="https://i.imgur.com/opc2olK.jpeg" alt="Sparkly Frog Avatar" />
+        <div class="avatar-spot" id="avatarSpot"></div>
+      </div>
+      <div class="glass">
+        <h3 style="margin-top:0">Cześć! Tu Sparkly Frog</h3>
+        <p class="muted">kanał pełen ciekawostek, wyzwań i krótkich filmików ze świata Minecrafta. Jeżeli lubisz dowiadywać się rzeczy, o których nie miałeś pojęcia, testować swoje umiejętności w szalonych challenge’ach albo po prostu dobrze się bawić przy shortach – to miejsce jest dla Ciebie!</p>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="merge" class="section">
+    <div class="head">
+      <h2></h2>
+      <span class="muted"></span>
+    </div>
+    <div class="merge-section glass">
+      <canvas id="particles" width="1200" height="420" aria-label="Sparkly Frog particle text"></canvas>
+      <div class="merge-label">Scrolluj, żeby połączyć kształty →</div>
+    </div>
+  </section>
+
+  <section id="discord" class="section">
+    <div class="head">
+      <h2>Discord</h2>
+      <span class="muted">Dołącz na serwer — info o nowych filmach.</span>
+    </div>
+    <div class="discord-wrap">
+      <div class="glass discord-card">
+        <h3 style="margin-top:0">Dołącz do społeczności</h3>
+        <p class="muted">Kliknij, aby wejść na serwer. Gdy uaktywnisz powiadomienia, bot da znać o każdej premierze.</p>
+        <div class="discord-cta">
+          <a class="btn" href="https://discord.gg/a9Ve2fE86D" target="_blank" rel="noopener">Wejdź na Discord</a>
+          
+        </div>
+      
+      </div>
+      <div class="glass discord-card" style="overflow:hidden">
+        <!-- Widżet Discord (podmień ID serwera) -->
+        <iframe
+          title="Discord widget"
+          src="https://discord.com/widget?id=1146565581890404392&theme=dark"
+          width="100%" height="320" allowtransparency="true" frameborder="0"
+          sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
+        </iframe>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="section">
+    <div class="head">
+      <h2>Kontakt</h2>
+      <span class="muted">Napisz maila ze swoją sugestią.</span>
+    </div>
+    <div class="contact">
+    <span class="muted">Email: sparklyfrog.kontakt@gmail.com</span>
+   
+          
+        </div>
+      <div class="envelope-stage">
+        <div class="envelope" id="envelope"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    © <span id="year"></span> Sparkly Frog — kanał YouTube, strona mojego autorstwa
+  </footer>
+
+  <script>
+    // Rok
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // HERO: losowe piksele
+    const floatPixels = document.getElementById('floatPixels');
+    const makePixel = () => {
+      const el = document.createElement('div');
+      el.className = 'pixel';
+      const size = 6 + Math.random()*10;
+      el.style.width = size + 'px';
+      el.style.height = size + 'px';
+      el.style.left = Math.random()*100 + '%';
+      el.style.top = (80 + Math.random()*40) + '%';
+      el.style.opacity = 0.25 + Math.random()*0.5;
+      el.style.background = Math.random()>.5 ? 'rgba(41,255,122,.35)' : 'rgba(130,255,190,.28)';
+      el.style['--dur'] = (12 + Math.random()*18) + 's';
+      floatPixels.appendChild(el);
+      setTimeout(()=> el.remove(), (Math.random()*1000+1)*30000);
+    };
+    for(let i=0;i<22;i++) makePixel();
+    setInterval(()=> makePixel(), 900);
+
+    // Spotlight na hero i avatar
+    const heroSpot = document.getElementById('heroSpot');
+    const heroVisual = document.querySelector('.hero-visual');
+    heroVisual.addEventListener('pointermove', e=>{
+      const r = heroVisual.getBoundingClientRect();
+      const x = ((e.clientX - r.left)/r.width)*100;
+      const y = ((e.clientY - r.top)/r.height)*100;
+      heroSpot.style.setProperty('--mx', x+'%');
+      heroSpot.style.setProperty('--my', y+'%');
+    });
+
+    const avatar = document.getElementById('avatar');
+    const avatarSpot = document.getElementById('avatarSpot');
+    avatar.addEventListener('pointermove', e=>{
+      const r = avatar.getBoundingClientRect();
+      const x = ((e.clientX - r.left)/r.width)*100;
+      const y = ((e.clientY - r.top)/r.height)*100;
+      avatarSpot.style.setProperty('--mx', x+'%');
+      avatarSpot.style.setProperty('--my', y+'%');
+    });
+
+    // PARTICLE TEXT (łączące się kształty przy scrollu)
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    const DPR = Math.min(2, window.devicePixelRatio || 1);
+    function resizeCanvas(){
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * DPR;
+      canvas.height = rect.height * DPR;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    let particles = [];
+    let targets = [];
+    function generateTargets(text){
+      const off = document.createElement('canvas');
+      const w = canvas.width, h = canvas.height;
+      off.width = w; off.height = h;
+      const c = off.getContext('2d');
+      c.clearRect(0,0,w,h);
+      // Tekst centralnie
+      const fontSize = Math.min(w*.12, h*.35);
+      c.fillStyle = '#ffffff';
+      c.font = `900 ${fontSize}px Arial Black, Impact, system-ui, sans-serif`;
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+      c.fillText(text, w/2, h/2);
+      // Sample pikseli co kilka punktów
+      const step = Math.max(4, Math.floor(fontSize/18));
+      const data = c.getImageData(0,0,w,h).data;
+      targets = [];
+      for(let y=0;y<h;y+=step){
+        for(let x=0;x<w;x+=step){
+          const idx = (y*w + x)*4 + 3;
+          if(data[idx] > 128){
+            targets.push({x, y});
+          }
+        }
+      }
+      // Utnij liczbę cząstek dla wydajności
+      const maxP = 2000;
+      if(targets.length > maxP){
+        const ratio = maxP/targets.length;
+        targets = targets.filter(()=> Math.random() < ratio);
+      }
+      // Inicjalizacja cząstek jeśli pusta
+      if(particles.length === 0){
+        particles = targets.map(t => ({
+          x: Math.random()*w,
+          y: h + Math.random()*h,
+          tx: t.x, ty: t.y,
+          size: 1 + Math.random()*2,
+          speed: 0.08 + Math.random()*0.08
+        }));
+      }else{
+        // Dopasuj istniejące
+        particles.length = Math.min(particles.length, targets.length);
+        for(let i=0;i<particles.length;i++){
+          particles[i].tx = targets[i].x;
+          particles[i].ty = targets[i].y;
+        }
+      }
+    }
+    generateTargets('SPARKLY FROG');
+
+    let progress = 0; // 0 = rozproszone, 1 = połączone
+    function draw(){
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0,0,w,h);
+      for(const p of particles){
+        // Interpolacja pozycji w zależności od scroll-progress
+        const px = p.x + (p.tx - p.x)*progress;
+        const py = p.y + (p.ty - p.y)*progress;
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(41,255,122,'+(0.65 + Math.random()*0.25)+')';
+        ctx.shadowColor = 'rgba(41,255,122,.55)';
+        ctx.shadowBlur = 16;
+        ctx.arc(px, py, p.size*DPR, 0, Math.PI*2);
+        ctx.fill();
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+    // Scroll progress dla sekcji “merge”
+    const mergeSection = document.querySelector('.merge-section');
+    function updateProgress(){
+      const r = mergeSection.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const start = vh*0.15; // kiedy zaczyna
+      const end = vh*0.85;   // kiedy kończy
+      const relative = r.top - start;
+      const range = (vh + r.height) - (start + (vh - end));
+      const p = 1 - Math.min(1, Math.max(0, relative / range));
+      progress = p; // rośnie przy scrollu w dół i maleje przy górę
+    }
+    updateProgress();
+    window.addEventListener('scroll', updateProgress, {passive:true});
+    window.addEventListener('resize', ()=>{ resizeCanvas(); generateTargets('SPARKLY FROG'); });
+
+    // Envelope “nadlatuje” kiedy sekcja w kadrze i podczas fokusu formularza
+    const envelope = document.getElementById('envelope');
+    const observer = new IntersectionObserver(entries=>{
+      for(const e of entries){
+        if(e.isIntersecting) envelope.classList.add('in-view');
+        else envelope.classList.remove('in-view');
+      }
+    }, {threshold:.35});
+    observer.observe(document.querySelector('.envelope-stage'));
+
+    // Przyjemny tilt na kartach video
+    document.querySelectorAll('.video-card').forEach(card=>{
+      let r;
+      card.addEventListener('pointermove', e=>{
+        r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left)/r.width - .5;
+        const y = (e.clientY - r.top)/r.height - .5;
+        card.style.transform = `rotateX(${(-y*6)}deg) rotateY(${(x*6)}deg) translateY(-3px)`;
+      });
+      card.addEventListener('pointerleave', ()=>{
+        card.style.transform = '';
+      });
+    });
+
+    // Discord "powiadomienia" — efekt i info
+    const notifyBtn = document.getElementById('notifyBtn');
+    notifyBtn.addEventListener('click', ()=>{
+      notifyBtn.textContent = 'Powiadomienia włączone ✔';
+      notifyBtn.classList.remove('ghost');
+      confetti(notifyBtn);
+      alert('Tip: Dodaj bota (np. z powiadomieniami YouTube) na swój serwer Discord, aby ogłaszać nowe filmy automatycznie.');
+    });
+
+    function confetti(anchor){
+      const rect = anchor.getBoundingClientRect();
+      for(let i=0;i<24;i++){
+        const s = document.createElement('div');
+        s.style.position='fixed';
+        s.style.left = (rect.left + rect.width/2) + 'px';
+        s.style.top = (rect.top + rect.height/2) + 'px';
+        s.style.width = s.style.height = (4+Math.random()*6) + 'px';
+        s.style.background = Math.random()>.5 ? 'rgba(41,255,122,1)' : '#b6ffd6';
+        s.style.boxShadow='0 0 10px rgba(41,255,122,.6)';
+        s.style.transform=`translate(-50%,-50%) translate(${(Math.random()*2-1)*120}px, ${(Math.random()*2-1)*120}px) rotate(${Math.random()*360}deg)`;
+        s.style.transition='transform .9s cubic-bezier(.12,.7,0,1), opacity .9s';
+        s.style.zIndex=9999;
+        document.body.appendChild(s);
+        requestAnimationFrame(()=>{
+          s.style.opacity='0';
+          s.style.transform=`translate(-50%,-50%) translate(${(Math.random()*2-1)*360}px, ${(Math.random()*2-1)*360}px) rotate(${Math.random()*720}deg)`;
+        });
+        setTimeout(()=> s.remove(), 1000);
+      }
+    }
+
+    // Ulepszenie: smooth scroll dla anchorów
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', e=>{
+        const id = a.getAttribute('href').slice(1);
+        const el = document.getElementById(id);
+        if(el){
+          e.preventDefault();
+          el.scrollIntoView({behavior:'smooth', block:'start'});
+        }
+      });
+    });
+
+    // Accessibility: przy klawiaturze pokaż wyraźniejszy fokus
+    document.addEventListener('keydown', e=>{
+      if(e.key === 'Tab') document.body.classList.add('kbd');
+    });
+  </script>
+</body>
+</html>
